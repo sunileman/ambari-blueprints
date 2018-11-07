@@ -1,0 +1,364 @@
+{
+  "Blueprints": {
+    "blueprint_name": "hdp30-druid-kakfa",
+    "stack_name": "HDP",
+    "stack_version": "3.0"
+  },
+  "settings": [
+    {
+      "recovery_settings": []
+    },
+    {
+      "service_settings": [
+        {
+          "name": "HIVE",
+          "credential_store_enabled": "false"
+        }
+      ]
+    },
+    {
+      "component_settings": []
+    }
+  ],
+  "configurations": [
+    {
+      "zoo.cfg": {
+        "properties_attributes": {},
+        "properties": {
+          "autopurge.purgeInterval": "24",
+          "dataDir": "/hadoop/zookeeper",
+          "autopurge.snapRetainCount": "30",
+          "clientPort": "2181",
+          "initLimit": "10",
+          "tickTime": "3000",
+          "syncLimit": "5"
+        }
+      }
+    },
+    {
+      "druid-broker": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.cache.type": "local",
+          "druid.server.http.numThreads": "49",
+          "druid.processing.numMergeBuffers": "3",
+          "druid.broker.http.numConnections": "20",
+          "druid.cache.sizeInBytes": "10000000",
+          "druid.broker.cache.populateCache": "true",
+          "druid.broker.cache.useCache": "true",
+          "druid.processing.numThreads": "15",
+          "druid.processing.buffer.sizeBytes": "268435456",
+          "druid.service": "druid/broker",
+          "druid.port": "8082"
+        }
+      }
+    },
+    {
+      "druid-middlemanager": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.indexer.fork.property.hadoop.mapreduce.map.java.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8",
+          "druid.indexer.runner.startPort": "8100",
+          "druid.indexer.fork.property.hadoop.mapreduce.reduce.java.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8",
+          "druid.processing.numThreads": "2",
+          "druid.indexer.runner.javaOpts": "-server -Xmx2g -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dhdp.version={stack_version} -Dhadoop.mapreduce.job.classloader=true -Djava.security.auth.login.config={druid_jaas_file}",
+          "druid.processing.buffer.sizeBytes": "256000000",
+          "druid.service": "druid/middlemanager",
+          "druid.port": "8091",
+          "druid.indexer.task.hadoopWorkingPath": "/tmp/druid-indexing",
+          "druid.server.http.numThreads": "50",
+          "druid.worker.capacity": "3",
+          "druid.indexer.task.baseTaskDir": "/apps/druid/tasks"
+        }
+      }
+    },
+    {
+      "druid-router": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.router.http.numConnections": "20",
+          "druid.server.http.numThreads": "50",
+          "druid.router.tierToBrokerMap": "{\"_default_tier\":\"druid/broker\"}",
+          "druid.service": "druid/router",
+          "druid.port": "8888"
+        }
+      }
+    },
+    {
+      "druid-coordinator": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.coordinator.merge.on": "false",
+          "druid.service": "druid/coordinator",
+          "druid.port": "8081"
+        }
+      }
+    },
+    {
+      "druid-overlord": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.indexer.storage.type": "metadata",
+          "druid.indexer.runner.type": "remote",
+          "druid.service": "druid/overlord",
+          "druid.port": "8090"
+        }
+      }
+    },
+    {
+      "druid-historical": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.segmentCache.infoDir": "/apps/druid/segmentCache/info_dir",
+          "druid.server.http.numThreads": "49",
+          "druid.processing.numMergeBuffers": "3",
+          "druid.segmentCache.locations": "[{\"path\":\"/apps/druid/segmentCache\",\"maxSize\":300000000000}]",
+          "druid.processing.numThreads": "15",
+          "druid.processing.buffer.sizeBytes": "268435456",
+          "druid.service": "druid/historical",
+          "druid.port": "8083",
+          "druid.server.maxSize": "300000000000"
+        }
+      }
+    },
+    {
+      "druid-env": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.historical.jvm.direct.memory": "1048576",
+          "druid.coordinator.jvm.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dorg.jboss.logging.provider=slf4j -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.SLF4JLogger -Dlog4j.shutdownCallbackRegistry=io.druid.common.config.Log4jShutdown -Dlog4j.shutdownHookEnabled=true -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -Xloggc:/var/logs/druid/coordinator.gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=50 -XX:GCLogFileSize=10m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/logs/druid/coordinator.hprof -Djava.security.auth.login.config={druid_jaas_file}",
+          "druid.coordinator.jvm.heap.memory": "512",
+          "druid.overlord.jvm.direct.memory": "1048576",
+          "druid.overlord.jvm.heap.memory": "512",
+          "druid.middlemanager.jvm.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dorg.jboss.logging.provider=slf4j -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.SLF4JLogger -Dlog4j.shutdownCallbackRegistry=io.druid.common.config.Log4jShutdown -Dlog4j.shutdownHookEnabled=true -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -Xloggc:/var/logs/druid/middlemanager.gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=50 -XX:GCLogFileSize=10m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/logs/druid/middlemanager.hprof -Djava.security.auth.login.config={druid_jaas_file}",
+          "druid.router.jvm.heap.memory": "512",
+          "druid.router.jvm.direct.memory": "1048576",
+          "druid_log_dir": "/var/log/druid",
+          "druid.broker.jvm.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dorg.jboss.logging.provider=slf4j -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.SLF4JLogger -Dlog4j.shutdownCallbackRegistry=io.druid.common.config.Log4jShutdown -Dlog4j.shutdownHookEnabled=true -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -Xloggc:/var/logs/druid/broker.gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=50 -XX:GCLogFileSize=10m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/logs/druid/broker.hprof -Djava.security.auth.login.config={druid_jaas_file}",
+          "druid.overlord.jvm.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dorg.jboss.logging.provider=slf4j -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.SLF4JLogger -Dlog4j.shutdownCallbackRegistry=io.druid.common.config.Log4jShutdown -Dlog4j.shutdownHookEnabled=true -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -Xloggc:/var/logs/druid/overlord.gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=50 -XX:GCLogFileSize=10m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/logs/druid/overlord.hprof -Djava.security.auth.login.config={druid_jaas_file}",
+          "druid.router.jvm.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dorg.jboss.logging.provider=slf4j -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.SLF4JLogger -Dlog4j.shutdownCallbackRegistry=io.druid.common.config.Log4jShutdown -Dlog4j.shutdownHookEnabled=true -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -Xloggc:/var/logs/druid/router.gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=50 -XX:GCLogFileSize=10m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/logs/druid/router.hprof -Djava.security.auth.login.config={druid_jaas_file}",
+          "druid.historical.jvm.heap.memory": "2048",
+          "content": "\n #!/bin/bash\n\n # Set DRUID specific environment variables here.\n\n # The java implementation to use.\n export JAVA_HOME={{java8_home}}\n export PATH=$JAVA_HOME/bin:$PATH\n export DRUID_PID_DIR={{druid_pid_dir}}\n export DRUID_LOG_DIR={{druid_log_dir}}\n export DRUID_CONF_DIR={{druid_conf_dir}}\n export DRUID_LIB_DIR={{druid_home}}/lib\n export HADOOP_CONF_DIR={{hadoop_conf_dir}}",
+          "druid.coordinator.jvm.direct.memory": "1048576",
+          "druid.broker.jvm.heap.memory": "2048",
+          "druid.broker.jvm.direct.memory": "1048576",
+          "druid_pid_dir": "/var/run/druid",
+          "druid.middlemanager.jvm.heap.memory": "256",
+          "druid.historical.jvm.opts": "-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dorg.jboss.logging.provider=slf4j -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.SLF4JLogger -Dlog4j.shutdownCallbackRegistry=io.druid.common.config.Log4jShutdown -Dlog4j.shutdownHookEnabled=true -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -Xloggc:/var/logs/druid/historical.gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=50 -XX:GCLogFileSize=10m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/logs/druid/historical.hprof -Djava.security.auth.login.config={druid_jaas_file}",
+          "druid.middlemanager.jvm.direct.memory": "1048576",
+          "druid_user": "druid"
+        }
+      }
+    },
+    {
+      "core-site": {
+        "fs.trash.interval": "4320"
+      }
+    },
+    {
+      "hdfs-site": {
+        "dfs.namenode.safemode.threshold-pct": "0.99"
+      }
+    },
+    {
+      "hive-site": {
+        "hive.exec.compress.output": "true",
+        "hive.merge.mapfiles": "true",
+        "hive.server2.tez.initialize.default.sessions": "true",
+        "hive.server2.transport.mode": "http"
+      }
+    },
+    {
+      "mapred-site": {
+        "mapreduce.job.reduce.slowstart.completedmaps": "0.7",
+        "mapreduce.map.output.compress": "true",
+        "mapreduce.output.fileoutputformat.compress": "true"
+      }
+    },
+    {
+      "yarn-site": {
+        "yarn.acl.enable": "true"
+      }
+    },
+    {
+      "druid-common": {
+        "properties_attributes": {},
+        "properties": {
+          "druid.storage.storageDirectory": "/apps/druid/warehouse",
+          "druid.metadata.storage.connector.user": "druid",
+          "druid.discovery.curator.path": "/druid/discovery",
+          "druid.monitoring.monitors": "[\"io.druid.java.util.metrics.JvmMonitor\"]",
+          "druid.metadata.storage.connector.port": "1527",
+          "druid.emitter.ambari-metrics.eventConverter": "{\"type\":\"whiteList\"}",
+          "druid.indexer.logs.type": "hdfs",
+          "druid.extensions.loadList": "[\"druid-datasketches\", \"druid-hdfs-storage\", \"druid-kafka-indexing-service\", \"ambari-metrics-emitter\"]",
+          "druid.security.extensions.loadList": "[]",
+          "druid.zk.service.host": "%HOSTGROUP::master%:2181",
+          "druid.extensions.pullList": "[]",
+          "druid.emitter.ambari-metrics.trustStorePath": "{{metric_truststore_path}}",
+          "druid.emitter.ambari-metrics.hostname": "{{metric_collector_host}}",
+          "druid.extensions.repositoryList": "[]",
+          "database_name": "druid",
+          "druid.zk.paths.base": "/druid",
+          "druid.emitter.ambari-metrics.protocol": "{{metric_collector_protocol}}",
+          "druid.metadata.storage.type": "derby",
+          "druid.indexer.logs.directory": "/user/druid/logs",
+          "druid.indexer.task.restoreTasksOnRestart": "true",
+          "druid.emitter": "{{metric_emitter_type}}",
+          "druid.metadata.storage.connector.connectURI": "jdbc:derby://localhost:1527/druid;create=true",
+          "druid.metadata.storage.connector.password": "*****",
+          "druid.emitter.ambari-metrics.port": "{{metric_collector_port}}",
+          "druid.storage.type": "hdfs",
+          "druid.emitter.ambari-metrics.trustStoreType": "{{metric_truststore_type}}"
+        }
+      }
+    }
+  ],
+  "host_groups": [
+    {
+      "name": "master",
+      "configurations": [],
+      "components": [
+        {
+          "name": "APP_TIMELINE_SERVER"
+        },
+        {
+          "name": "HDFS_CLIENT"
+        },
+        {
+          "name": "TIMELINE_READER"
+        },
+        {
+          "name": "HISTORYSERVER"
+        },
+        {
+          "name": "HIVE_CLIENT"
+        },
+        {
+          "name": "HIVE_METASTORE"
+        },
+        {
+          "name": "HIVE_SERVER"
+        },
+        {
+          "name": "JOURNALNODE"
+        },
+        {
+          "name": "MAPREDUCE2_CLIENT"
+        },
+        {
+          "name": "METRICS_COLLECTOR"
+        },
+        {
+          "name": "METRICS_MONITOR"
+        },
+        {
+          "name": "NAMENODE"
+        },
+        {
+          "name": "RESOURCEMANAGER"
+        },
+        {
+          "name": "SECONDARY_NAMENODE"
+        },
+        {
+          "name": "TEZ_CLIENT"
+        },
+        {
+          "name": "YARN_CLIENT"
+        },
+        {
+          "name": "ZOOKEEPER_CLIENT"
+        },
+        {
+          "name": "ZOOKEEPER_SERVER"
+        }
+      ],
+      "cardinality": "1"
+    },
+    {
+      "name": "druid_master",
+      "configurations": [],
+      "components": [
+        {
+          "name": "DRUID_BROKER"
+        },
+        {
+          "name": "DRUID_COORDINATOR"
+        },
+        {
+          "name": "DRUID_OVERLORD"
+        },
+        {
+          "name": "DRUID_ROUTER"
+        },
+        {
+          "name": "HIVE_CLIENT"
+        },
+        {
+          "name": "TEZ_CLIENT"
+        },
+        {
+          "name": "DATANODE"
+        },
+        {
+          "name": "METRICS_MONITOR"
+        },
+        {
+          "name": "NODEMANAGER"
+        }
+      ],
+      "cardinality": "1+"
+    },
+    {
+      "name": "druid_master2",
+      "configurations": [],
+      "components": [
+        {
+          "name": "DRUID_HISTORICAL"
+        },
+        {
+          "name": "DRUID_MIDDLEMANAGER"
+        },
+        {
+          "name": "DATANODE"
+        }
+      ],
+      "cardinality": "1+"
+    },
+    {
+      "name": "Messaging",
+      "components": [
+        {
+          "name": "KAFKA_BROKER"
+        },
+        {
+          "name": "METRICS_MONITOR"
+        },
+        {
+          "name": "ZOOKEEPER_CLIENT"
+        }
+      ],
+      "cardinality": "1+"
+    },
+    {
+      "name": "compute",
+      "configurations": [],
+      "components": [
+        {
+          "name": "HIVE_CLIENT"
+        },
+        {
+          "name": "TEZ_CLIENT"
+        },
+        {
+          "name": "METRICS_MONITOR"
+        },
+        {
+          "name": "NODEMANAGER"
+        }
+      ],
+      "cardinality": "1+"
+    }
+  ]
+}
