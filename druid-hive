@@ -1,6 +1,6 @@
 {
   "Blueprints": {
-    "blueprint_name": "hdp30-druid-kakfa",
+    "blueprint_name": "hdp30-druid-hive",
     "stack_name": "HDP",
     "stack_version": "3.0"
   },
@@ -322,40 +322,9 @@
         },
         {
           "name": "DATANODE"
-        }
-      ],
-      "cardinality": "1+"
-    },
-    {
-      "name": "Messaging",
-      "components": [
-        {
-          "name": "KAFKA_BROKER"
         },
-        {
-          "name": "METRICS_MONITOR"
-        },
-        {
+                {
           "name": "ZOOKEEPER_CLIENT"
-        }
-      ],
-      "cardinality": "1+"
-    },
-    {
-      "name": "compute",
-      "configurations": [],
-      "components": [
-        {
-          "name": "HIVE_CLIENT"
-        },
-        {
-          "name": "TEZ_CLIENT"
-        },
-        {
-          "name": "METRICS_MONITOR"
-        },
-        {
-          "name": "NODEMANAGER"
         }
       ],
       "cardinality": "1+"
