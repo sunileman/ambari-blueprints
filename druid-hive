@@ -272,6 +272,9 @@
         },
         {
           "name": "ZOOKEEPER_SERVER"
+        },
+                {
+          "name": "ZEPPELIN_MASTER"
         }
       ],
       "cardinality": "1"
