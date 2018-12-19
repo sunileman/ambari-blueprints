@@ -1,6 +1,6 @@
 {
   "Blueprints": {
-    "blueprint_name": "hdf-nifi-no-kerberos-small-footprint",
+    "blueprint_name": "hdf-32-small-no-kerberos",
     "stack_name": "HDF",
     "stack_version": "3.2"
   },
@@ -49,28 +49,7 @@
   ],
   "host_groups": [
     {
-      "name": "Services",
-      "components": [
-        {
-          "name": "NIFI_REGISTRY_MASTER"
-        },
-        {
-          "name": "METRICS_COLLECTOR"
-        },
-        {
-          "name": "METRICS_MONITOR"
-        },
-        {
-          "name": "METRICS_GRAFANA"
-        },
-        {
-          "name": "ZOOKEEPER_CLIENT"
-        }
-      ],
-      "cardinality": "1"
-    },
-    {
-      "name": "NiFiAndZK",
+      "name": "NiFi",
       "components": [
         {
           "name": "NIFI_MASTER"
@@ -80,9 +59,18 @@
         },
         {
           "name": "ZOOKEEPER_CLIENT"
-        },        
+        },
         {
           "name": "ZOOKEEPER_SERVER"
+        },
+        {
+          "name": "METRICS_GRAFANA"
+        },
+        {
+          "name": "NIFI_REGISTRY_MASTER"
+        },
+        {
+          "name": "METRICS_COLLECTOR"
         }
       ],
       "cardinality": "1+"
