@@ -1,0 +1,43 @@
+{
+  "Blueprints": {
+    "blueprint_name": "hdf32-kakfa-small",
+    "stack_name": "HDF",
+    "stack_version": "3.2"
+  },
+  "configurations": [
+    {
+      "ams-grafana-env": {
+        "metrics_grafana_password": "admin"
+      }
+    }
+  ],
+  "host_groups": [
+    {
+      "name": "Messaging",
+      "components": [
+        {
+          "name": "KAFKA_BROKER"
+        },
+        {
+          "name": "METRICS_MONITOR"
+        },
+        {
+          "name": "ZOOKEEPER_CLIENT"
+        },
+        {
+          "name": "METRICS_COLLECTOR"
+        },
+        {
+          "name": "METRICS_GRAFANA"
+        },
+        {
+          "name": "ZOOKEEPER_SERVER"
+        },
+        {
+          "name": "ZOOKEEPER_CLIENT"
+        }
+      ],
+      "cardinality": "1+"
+    }
+  ]
+}
